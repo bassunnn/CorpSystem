@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Практическое занятие №3 - Тайм-трекер</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: #1f2933;
+      background: #ffffff;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .page {
+      min-height: 260mm;
+      page-break-after: always;
+    }
+    .title-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      min-height: 260mm;
+      padding: 8mm 0;
+    }
+    .title-top p,
+    .title-bottom p {
+      margin: 4px 0;
+    }
+    .title-main {
+      margin-top: 38mm;
+    }
+    .title-main h1 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .title-main h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .student {
+      width: 82mm;
+      margin-left: auto;
+      margin-top: 35mm;
+      text-align: left;
+    }
+    h2 {
+      margin: 18px 0 8px;
+      font-size: 20px;
+      color: #0f3d5e;
+    }
+    h3 {
+      margin: 14px 0 6px;
+      font-size: 16px;
+      color: #13547a;
+    }
+    p { margin: 6px 0; }
+    ul, ol { margin: 6px 0 8px 22px; padding: 0; }
+    li { margin: 3px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 12px;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+    th {
+      background: #eef7fb;
+      text-align: left;
+    }
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      background: #f1f5f9;
+      padding: 1px 3px;
+    }
+    pre {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 8px 10px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <section class="page title-page">
+    <div class="title-top">
+      <p>Дисциплина: Программирование корпоративных систем</p>
+      <p>Практическое занятие №3</p>
+      <p>Паттерны проектирования. Системы сборки</p>
+    </div>
+    <div class="title-main">
+      <h1>Техническая документация проекта</h1>
+      <h2>Тайм-трекер</h2>
+      <p>Консольное приложение для учета рабочего времени</p>
+      <div class="student">
+        <p>Выполнил: Лобин Александр Ильич</p>
+        <p>Группа: ЭФБО-06-24</p>
+      </div>
+    </div>
+    <div class="title-bottom">
+      <p>Москва, 2026</p>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2>1. Описание проекта</h2>
+    <p><strong>Тайм-трекер</strong> - консольное приложение на C++ для учета рабочего времени по задачам. Пользователь может создавать задачи, запускать и останавливать таймер, просматривать историю рабочих сессий и получать отчет о суммарном времени.</p>
+
+    <h3>1.1 Основные функции</h3>
+    <ul>
+      <li>создание задач с названием и описанием;</li>
+      <li>просмотр списка активных и архивных задач;</li>
+      <li>запуск рабочей сессии для выбранной задачи;</li>
+      <li>остановка активной сессии и расчет длительности;</li>
+      <li>сохранение данных в локальные файлы;</li>
+      <li>формирование отчета по затраченному времени.</li>
+    </ul>
+
+    <h3>1.2 Основные классы</h3>
+    <table>
+      <tr><th>Класс</th><th>Назначение</th></tr>
+      <tr><td><code>Task</code></td><td>Доменная модель задачи: идентификатор, название, описание, статус.</td></tr>
+      <tr><td><code>TimeSession</code></td><td>Доменная модель рабочей сессии: задача, время начала, время завершения, активность.</td></tr>
+      <tr><td><code>TaskManager</code></td><td>Создание, поиск, просмотр и архивирование задач.</td></tr>
+      <tr><td><code>TimeTracker</code></td><td>Запуск и остановка таймера, контроль единственной активной сессии.</td></tr>
+      <tr><td><code>Storage</code></td><td>Загрузка и сохранение задач и сессий в локальные CSV-файлы.</td></tr>
+      <tr><td><code>ReportService</code></td><td>Агрегация завершенных сессий и расчет суммарного времени по задачам.</td></tr>
+      <tr><td><code>ConsoleUI</code></td><td>Пользовательский интерфейс командной строки.</td></tr>
+    </table>
+
+    <h2>2. Паттерны проектирования</h2>
+    <p>Для проекта применимы несколько изученных паттернов. Они помогают разделить ответственность между модулями, упростить замену реализации хранения данных и сделать пользовательские команды более понятными для расширения.</p>
+
+    <h3>2.1 Facade</h3>
+    <p>Паттерн <strong>Facade</strong> применим к классу <code>ConsoleUI</code>. Пользователь работает с простым меню, а внутри интерфейс обращается к нескольким подсистемам: <code>TaskManager</code>, <code>TimeTracker</code>, <code>Storage</code> и <code>ReportService</code>.</p>
+    <p>Например, команда остановки таймера вызывает <code>TimeTracker::stop()</code>, затем пользователь может сохранить данные через <code>Storage::saveSessions()</code>. Внешнему пользователю не нужно знать, какие объекты участвуют в этом сценарии: он выбирает пункт меню, а фасад координирует работу подсистем.</p>
+
+    <h3>2.2 Repository</h3>
+    <p>Паттерн <strong>Repository</strong> применим к классу <code>Storage</code>. Он отделяет доменную логику от деталей хранения данных. Классы <code>TaskManager</code> и <code>TimeTracker</code> работают с объектами <code>Task</code> и <code>TimeSession</code>, а не с файлами напрямую.</p>
+    <p>В текущей версии <code>Storage</code> сохраняет данные в файлы <code>tasks.csv</code> и <code>sessions.csv</code>. В дальнейшем реализацию можно заменить на SQLite или JSON, не меняя основную бизнес-логику приложения.</p>
+
+    <h3>2.3 Singleton</h3>
+    <p>Паттерн <strong>Singleton</strong> может быть применен к сервису конфигурации приложения, например к будущему классу <code>AppConfig</code>. Такой класс будет хранить путь к каталогу данных, формат вывода времени и другие глобальные настройки.</p>
+    <p>В текущей реализации Singleton намеренно не добавлен в код, потому что проект небольшой и достаточно передавать объект <code>Storage</code> через конструктор. Однако при появлении единого конфигурационного объекта Singleton будет полезен для централизованного доступа к неизменяемым настройкам.</p>
+
+    <h3>2.4 Strategy</h3>
+    <p>Паттерн <strong>Strategy</strong> применим для формирования отчетов. Сейчас <code>ReportService</code> строит общий отчет по всем завершенным сессиям. В дальнейшем можно выделить интерфейс <code>ReportStrategy</code> и реализации <code>DailyReportStrategy</code>, <code>TaskReportStrategy</code>, <code>PeriodReportStrategy</code>.</p>
+    <p>Например, пользователь выбирает тип отчета, а <code>ReportService</code> получает конкретную стратегию и вызывает общий метод генерации. Это позволит добавлять новые виды отчетов без переписывания существующего кода.</p>
+  </section>
+
+  <section class="page">
+    <h3>2.5 Command</h3>
+    <p>Паттерн <strong>Command</strong> применим к обработке пунктов меню. Сейчас команды реализованы методами <code>ConsoleUI::addTask()</code>, <code>ConsoleUI::startTimer()</code>, <code>ConsoleUI::stopTimer()</code> и другими. При росте интерфейса каждое действие можно оформить отдельным объектом-командой.</p>
+    <p>Например, класс <code>StartTimerCommand</code> будет хранить ссылку на <code>TimeTracker</code> и идентификатор задачи, а метод <code>execute()</code> будет запускать таймер. Такой подход упростит добавление истории команд, отмены операций и тестирование пользовательских сценариев.</p>
+
+    <h3>2.6 Factory Method</h3>
+    <p>Паттерн <strong>Factory Method</strong> применим при создании объектов рабочих сессий и отчетов. Например, будущий класс <code>SessionFactory</code> может создавать корректно заполненный объект <code>TimeSession</code> с уникальным идентификатором и текущим временем начала.</p>
+    <p>Это полезно, потому что правила создания сессии не будут размазаны по проекту. Если позже понадобится добавить тип сессии, теги или источник запуска, изменение останется внутри фабрики.</p>
+
+    <h2>3. Организация файловой структуры</h2>
+    <p>Проект организован по модульному принципу. Заголовочные файлы находятся в каталоге <code>include/</code>, реализации - в каталоге <code>src/</code>.</p>
+    <pre>KR3/
+  CMakeLists.txt
+  README.md
+  include/
+    Task.h
+    TimeSession.h
+    TaskManager.h
+    TimeTracker.h
+    Storage.h
+    ReportService.h
+    ConsoleUI.h
+  src/
+    main.cpp
+    Task.cpp
+    TimeSession.cpp
+    TaskManager.cpp
+    TimeTracker.cpp
+    Storage.cpp
+    ReportService.cpp
+    ConsoleUI.cpp</pre>
+
+    <h2>4. Система сборки CMake</h2>
+    <p>Для проекта подготовлен корневой файл <code>CMakeLists.txt</code>. Он задает имя проекта, минимальную версию CMake, стандарт C++17, список исходных файлов и каталог заголовков.</p>
+    <pre>cmake_minimum_required(VERSION 3.10)
+project(TimeTracker LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+add_executable(time_tracker)
+target_sources(time_tracker PRIVATE ...)
+target_include_directories(time_tracker PRIVATE include)</pre>
+
+    <h3>4.1 Команды сборки</h3>
+    <pre>cmake -S . -B build
+cmake --build build
+cd build
+./time_tracker</pre>
+
+    <h3>4.2 Сторонние библиотеки</h3>
+    <p>Сторонние библиотеки не используются. Для хранения данных, работы со временем, файловой системой и коллекциями применяется стандартная библиотека C++17.</p>
+
+    <h2>5. Вывод</h2>
+    <p>В проект добавлена глава с анализом применимых паттернов проектирования. Также подготовлена модульная C++ структура, настроен <code>CMakeLists.txt</code>, добавлен <code>README.md</code> с инструкцией по сборке и запуску. Проект соответствует требованиям практического занятия: код разделен на логические модули, сборка описана через CMake, а техническая документация оформлена как HTML и PDF.</p>
+  </section>
+</body>
+</html>

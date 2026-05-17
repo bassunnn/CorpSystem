@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Практическое занятие №4 - Тестирование проекта</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: #1f2933;
+      background: #ffffff;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .page {
+      min-height: 260mm;
+      page-break-after: always;
+    }
+    .title-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      min-height: 260mm;
+      padding: 8mm 0;
+    }
+    .title-top p,
+    .title-bottom p {
+      margin: 4px 0;
+    }
+    .title-main {
+      margin-top: 40mm;
+    }
+    .title-main h1 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .title-main h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+    }
+    .student {
+      width: 82mm;
+      margin-left: auto;
+      margin-top: 35mm;
+      text-align: left;
+    }
+    h2 {
+      margin: 18px 0 8px;
+      font-size: 20px;
+      color: #0f3d5e;
+    }
+    h3 {
+      margin: 14px 0 6px;
+      font-size: 16px;
+      color: #13547a;
+    }
+    p { margin: 6px 0; }
+    ul, ol { margin: 6px 0 8px 22px; padding: 0; }
+    li { margin: 3px 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 12px;
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+    th {
+      background: #eef7fb;
+      text-align: left;
+    }
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      background: #f1f5f9;
+      padding: 1px 3px;
+    }
+    pre {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      padding: 8px 10px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <section class="page title-page">
+    <div class="title-top">
+      <p>Дисциплина: Программирование корпоративных систем</p>
+      <p>Практическое занятие №4</p>
+      <p>Тестирование проекта</p>
+    </div>
+    <div class="title-main">
+      <h1>Отчет по тестированию проекта</h1>
+      <h2>Тайм-трекер</h2>
+      <p>Консольное приложение для учета рабочего времени</p>
+      <div class="student">
+        <p>Выполнил: Лобин Александр Ильич</p>
+        <p>Группа: ЭФБО-06-24</p>
+      </div>
+    </div>
+    <div class="title-bottom">
+      <p>Москва, 2026</p>
+    </div>
+  </section>
+
+  <section class="page">
+    <h2>1. Цель работы</h2>
+    <p>Цель практического занятия - разработать систему unit-тестов и тестовых сценариев для проекта "Тайм-трекер", подключить библиотеку тестирования к CMake-сборке и проверить основные функции классов приложения.</p>
+
+    <h2>2. Краткое описание проекта</h2>
+    <p>Тайм-трекер - консольное C++ приложение для учета рабочего времени по задачам. Пользователь может создавать задачи, запускать и останавливать рабочую сессию, сохранять данные локально и получать отчет о затраченном времени.</p>
+
+    <h3>2.1 Тестируемые классы</h3>
+    <table>
+      <tr><th>Класс</th><th>Основные функции</th><th>Файл тестов</th></tr>
+      <tr><td><code>Task</code></td><td>Хранение данных задачи, преобразование статуса.</td><td><code>tests/test_task.cpp</code></td></tr>
+      <tr><td><code>TimeSession</code></td><td>Хранение данных сессии, расчет длительности.</td><td><code>tests/test_time_session.cpp</code></td></tr>
+      <tr><td><code>TaskManager</code></td><td>Создание, поиск, архивирование и загрузка задач.</td><td><code>tests/test_task_manager.cpp</code></td></tr>
+      <tr><td><code>TimeTracker</code></td><td>Запуск и остановка таймера, контроль активной сессии.</td><td><code>tests/test_time_tracker.cpp</code></td></tr>
+      <tr><td><code>Storage</code></td><td>Сохранение и загрузка задач и сессий.</td><td><code>tests/test_storage.cpp</code></td></tr>
+      <tr><td><code>ReportService</code></td><td>Расчет суммарного времени и вывод отчета.</td><td><code>tests/test_report_service.cpp</code></td></tr>
+      <tr><td><code>ConsoleUI</code></td><td>Работа меню и пользовательских команд.</td><td><code>tests/test_console_ui.cpp</code></td></tr>
+    </table>
+
+    <h2>3. Подключение Catch2</h2>
+    <p>Для unit-тестирования используется библиотека Catch2. Она подключена в сборку через CMake <code>FetchContent</code> в файле <code>tests/CMakeLists.txt</code>.</p>
+    <pre>include(FetchContent)
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG v3.5.3
+)
+FetchContent_MakeAvailable(Catch2)</pre>
+    <p>Основная логика проекта вынесена в библиотеку <code>time_tracker_lib</code>. Исполняемый файл приложения и тесты подключают эту библиотеку отдельно.</p>
+    <pre>add_library(time_tracker_lib ...)
+add_executable(time_tracker src/main.cpp)
+target_link_libraries(time_tracker PRIVATE time_tracker_lib)
+add_executable(unit_tests ...)
+target_link_libraries(unit_tests PRIVATE time_tracker_lib Catch2::Catch2WithMain)</pre>
+
+    <h2>4. Unit-тесты</h2>
+    <p>Для каждого основного класса разработан набор тестов, покрывающих нормальные сценарии, граничные случаи и некорректные входные данные.</p>
+
+    <h3>4.1 Примеры проверок</h3>
+    <ul>
+      <li><code>Task</code>: преобразование статуса в строку, разбор строки, обработка неизвестного статуса, изменение статуса.</li>
+      <li><code>TimeSession</code>: точная длительность завершенной сессии, нулевая длительность, активная сессия, рост длительности во времени.</li>
+      <li><code>TaskManager</code>: добавление задач, последовательность идентификаторов, поиск существующей и отсутствующей задачи, архивирование.</li>
+      <li><code>TimeTracker</code>: запуск по активной задаче, отказ для отсутствующей или архивной задачи, запрет второй активной сессии, остановка таймера.</li>
+      <li><code>Storage</code>: пустое хранилище, сохранение задач, архивный статус, несколько задач, сохранение сессий, перезапись данных.</li>
+      <li><code>ReportService</code>: пустой отчет, сумма по одной задаче, сумма нескольких сессий, разделение задач, игнорирование активных сессий.</li>
+      <li><code>ConsoleUI</code>: выход и сохранение, добавление задачи, просмотр списка, архивирование, запуск и остановка таймера, неизвестная команда.</li>
+    </ul>
+  </section>
+
+  <section class="page">
+    <h2>5. Тестовые сценарии</h2>
+    <p>Кроме unit-тестов реализованы отдельные мини-программы, раскрывающие основные этапы работы приложения. Они находятся в каталоге <code>tests/scenarios/</code> и собираются отдельными исполняемыми файлами.</p>
+
+    <table>
+      <tr><th>Сценарий</th><th>Файл</th><th>Проверяемый процесс</th></tr>
+      <tr><td>Базовый рабочий процесс</td><td><code>scenario_basic_workflow.cpp</code></td><td>Создание задачи, запуск таймера, остановка таймера.</td></tr>
+      <tr><td>Сохранение и загрузка</td><td><code>scenario_persistence.cpp</code></td><td>Запись данных в файлы и повторная загрузка.</td></tr>
+      <tr><td>Формирование отчета</td><td><code>scenario_reporting.cpp</code></td><td>Расчет суммарного времени по задачам и вывод отчета.</td></tr>
+    </table>
+
+    <h2>6. Команды сборки и запуска</h2>
+    <p>Проект собирается из отдельной директории <code>build</code>. При первой конфигурации CMake загружает Catch2.</p>
+    <pre>cmake -S . -B build
+cmake --build build
+ctest --test-dir build --output-on-failure</pre>
+
+    <p>Сценарные программы после сборки находятся в каталоге <code>build/tests/scenarios</code>.</p>
+    <pre>./tests/scenarios/scenario_basic_workflow
+./tests/scenarios/scenario_persistence
+./tests/scenarios/scenario_reporting</pre>
+
+    <h2>7. Ожидаемые результаты</h2>
+    <ul>
+      <li>Все unit-тесты Catch2 должны завершаться успешно.</li>
+      <li>Сценарий базового процесса должен вывести <code>Basic workflow passed</code>.</li>
+      <li>Сценарий сохранения должен вывести <code>Persistence scenario passed</code>.</li>
+      <li>Сценарий отчетов должен вывести отчет и строку <code>Reporting scenario passed</code>.</li>
+    </ul>
+
+    <h2>8. Вывод</h2>
+    <p>В рамках практической работы к проекту подключена библиотека Catch2, настроена сборка unit-тестов через CMake, добавлены тесты для основных классов и реализованы отдельные мини-программы тестовых сценариев. Такая структура позволяет проверять как отдельные функции классов, так и основные пользовательские процессы приложения.</p>
+  </section>
+</body>
+</html>
