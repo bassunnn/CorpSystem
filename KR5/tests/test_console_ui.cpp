@@ -90,6 +90,24 @@ TEST_CASE("ConsoleUI archives task")
     REQUIRE(manager.findTask(id)->status == TaskStatus::Archived);
 }
 
+TEST_CASE("ConsoleUI deletes task and related sessions")
+{
+    TaskManager manager;
+    const int id = manager.addTask("Temporary", "");
+    TimeTracker tracker(manager);
+    tracker.start(id);
+    tracker.stop();
+    Storage storage(tempDirectory("delete"));
+    ConsoleUI ui(manager, tracker, storage);
+    ConsoleHarness console("8\n" + std::to_string(id) + "\n0\n");
+
+    ui.run();
+
+    REQUIRE_FALSE(manager.findTask(id).has_value());
+    REQUIRE(tracker.sessions().empty());
+    REQUIRE(console.output.str().find("Task deleted.") != std::string::npos);
+}
+
 TEST_CASE("ConsoleUI starts and stops timer")
 {
     TaskManager manager;

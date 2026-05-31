@@ -175,23 +175,24 @@ COPY --from=build /app/build/time_tracker /usr/local/bin/time_tracker
 docker build -t time-tracker-kr5 .
 ```
 
-Запуск по умолчанию:
+Интерактивный запуск:
 
 ```sh
-docker run --rm time-tracker-kr5
+docker run --rm -it time-tracker-kr5
 ```
 
 Так как в Dockerfile указано:
 
 ```dockerfile
 ENTRYPOINT ["time_tracker"]
-CMD ["--demo"]
 ```
 
-контейнер по умолчанию запускает:
+контейнер запускает приложение `time_tracker`. Если не передать аргументы, программа открывает интерактивное меню.
+
+Демонстрационный запуск выполняется отдельной командой:
 
 ```sh
-time_tracker --demo
+docker run --rm time-tracker-kr5 --demo
 ```
 
 Это демонстрационный режим: он показывает, что приложение внутри контейнера работает.
@@ -208,6 +209,7 @@ time_tracker --demo                  run container demo
 time_tracker [--data DIR] add-task TITLE [DESCRIPTION]
 time_tracker [--data DIR] list-tasks
 time_tracker [--data DIR] archive-task ID
+time_tracker [--data DIR] delete-task ID
 time_tracker [--data DIR] start ID
 time_tracker [--data DIR] stop
 time_tracker [--data DIR] history
@@ -236,6 +238,7 @@ docker run --rm time-tracker-kr5 report
 - `add-task` - создать задачу;
 - `list-tasks` - вывести список задач;
 - `archive-task` - архивировать задачу;
+- `delete-task` - удалить задачу и связанные с ней рабочие сессии;
 - `start` - запустить таймер;
 - `stop` - остановить таймер;
 - `history` - показать историю сессий;
@@ -347,14 +350,14 @@ docker run --rm time-tracker-kr5 add-task "Docker demo"
 3. Объяснить установку зависимостей в build-стадии.
 4. Показать строку с `cmake`, `cmake --build` и `ctest`.
 5. Показать `COPY --from=build`, где в runtime копируется только бинарник.
-6. Показать `ENTRYPOINT` и `CMD`.
+6. Показать `ENTRYPOINT`.
 7. Открыть `.dockerignore` и объяснить, зачем он нужен.
 8. Открыть `src/main.cpp` и показать команды CLI.
 9. Запустить:
 
 ```sh
 docker build -t time-tracker-kr5 .
-docker run --rm time-tracker-kr5
+docker run --rm -it time-tracker-kr5
 docker run --rm time-tracker-kr5 --help
 ```
 
@@ -362,7 +365,7 @@ docker run --rm time-tracker-kr5 --help
 
 Можно сказать так:
 
-> В пятой контрольной я контейнеризировал проект через Docker. В Dockerfile используется многостадийная сборка: на стадии `build` устанавливаются CMake, компилятор и Git, затем проект собирается и запускаются тесты Catch2. На стадии `runtime` остается только готовый исполняемый файл. Также я добавил запуск приложения через аргументы командной строки, чтобы контейнер можно было использовать командами `add-task`, `list-tasks`, `report` и другими. По умолчанию контейнер запускает демонстрационный режим `--demo`.
+> В пятой контрольной я контейнеризировал проект через Docker. В Dockerfile используется многостадийная сборка: на стадии `build` устанавливаются CMake, компилятор и Git, затем проект собирается и запускаются тесты Catch2. На стадии `runtime` остается только готовый исполняемый файл. Также я добавил запуск приложения через аргументы командной строки, чтобы контейнер можно было использовать командами `add-task`, `list-tasks`, `delete-task`, `report` и другими. Без аргументов контейнер открывает интерактивное меню, а для быстрой проверки есть режим `--demo`.
 
 ## Возможные вопросы и ответы
 
@@ -381,10 +384,6 @@ Dockerfile - это инструкция для Docker, как собрать о
 **Что делает `ENTRYPOINT`?**
 
 Он задает основную команду контейнера. В данном случае контейнер всегда запускает `time_tracker`.
-
-**Что делает `CMD ["--demo"]`?**
-
-Это аргумент по умолчанию. Если пользователь не передал свои аргументы, контейнер запустит `time_tracker --demo`.
 
 **Как передать другую команду в контейнер?**
 

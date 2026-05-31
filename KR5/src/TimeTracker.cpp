@@ -66,6 +66,17 @@ void TimeTracker::replaceSessions(std::vector<TimeSession> loadedSessions)
     sessions_ = std::move(loadedSessions);
 }
 
+int TimeTracker::deleteSessionsForTask(int taskId)
+{
+    const auto oldSize = sessions_.size();
+    sessions_.erase(
+        std::remove_if(sessions_.begin(), sessions_.end(), [taskId](const TimeSession& item) {
+            return item.taskId == taskId;
+        }),
+        sessions_.end());
+    return static_cast<int>(oldSize - sessions_.size());
+}
+
 int TimeTracker::nextId() const
 {
     int maxId = 0;

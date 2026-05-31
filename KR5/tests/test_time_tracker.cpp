@@ -75,3 +75,20 @@ TEST_CASE("TimeTracker replaces loaded sessions and continues id sequence")
     REQUIRE(tracker.start(taskId));
     REQUIRE(tracker.activeSession()->id == 6);
 }
+
+TEST_CASE("TimeTracker deletes sessions for task")
+{
+    TaskManager manager;
+    const int first = manager.addTask("First", "");
+    const int second = manager.addTask("Second", "");
+    TimeTracker tracker(manager);
+    tracker.replaceSessions({
+        TimeSession{1, first, {}, {}, false},
+        TimeSession{2, second, {}, {}, false},
+        TimeSession{3, first, {}, {}, false}
+    });
+
+    REQUIRE(tracker.deleteSessionsForTask(first) == 2);
+    REQUIRE(tracker.sessions().size() == 1);
+    REQUIRE(tracker.sessions().front().taskId == second);
+}

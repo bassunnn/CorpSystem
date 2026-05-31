@@ -54,6 +54,25 @@ TEST_CASE("TaskManager refuses to archive missing task")
     REQUIRE_FALSE(manager.archiveTask(45));
 }
 
+TEST_CASE("TaskManager deletes existing task")
+{
+    TaskManager manager;
+    const int first = manager.addTask("First", "");
+    const int second = manager.addTask("Second", "");
+
+    REQUIRE(manager.deleteTask(first));
+    REQUIRE_FALSE(manager.findTask(first).has_value());
+    REQUIRE(manager.findTask(second).has_value());
+    REQUIRE(manager.tasks().size() == 1);
+}
+
+TEST_CASE("TaskManager refuses to delete missing task")
+{
+    TaskManager manager;
+
+    REQUIRE_FALSE(manager.deleteTask(45));
+}
+
 TEST_CASE("TaskManager replaces loaded tasks and continues id sequence")
 {
     TaskManager manager;

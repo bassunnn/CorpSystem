@@ -16,6 +16,7 @@ public:
     const std::vector<TimeSession>& sessions() const;
     std::optional<TimeSession> activeSession() const;
     void replaceSessions(std::vector<TimeSession> loadedSessions);
+    int deleteSessionsForTask(int taskId);
 
 private:
     int nextId() const;

@@ -23,6 +23,17 @@ bool TaskManager::archiveTask(int taskId)
     return true;
 }
 
+bool TaskManager::deleteTask(int taskId)
+{
+    const auto oldSize = tasks_.size();
+    tasks_.erase(
+        std::remove_if(tasks_.begin(), tasks_.end(), [taskId](const Task& item) {
+            return item.id == taskId;
+        }),
+        tasks_.end());
+    return tasks_.size() != oldSize;
+}
+
 const std::vector<Task>& TaskManager::tasks() const
 {
     return tasks_;

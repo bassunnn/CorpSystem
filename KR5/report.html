@@ -156,13 +156,17 @@
   <p>Сборка образа выполняется из каталога <code>KR5</code>:</p>
   <pre><code>docker build -t time-tracker-kr5 .</code></pre>
 
+  <p>Интерактивный запуск приложения:</p>
+  <pre><code>docker run --rm -it time-tracker-kr5</code></pre>
+
   <p>Демонстрационный запуск контейнера:</p>
-  <pre><code>docker run --rm time-tracker-kr5</code></pre>
+  <pre><code>docker run --rm time-tracker-kr5 --demo</code></pre>
 
   <p>Передача аргументов командной строки:</p>
   <pre><code>docker run --rm time-tracker-kr5 --help
 docker run --rm time-tracker-kr5 add-task "Write report" "Prepare Docker section"
 docker run --rm time-tracker-kr5 list-tasks
+docker run --rm time-tracker-kr5 delete-task 1
 docker run --rm time-tracker-kr5 report</code></pre>
 
   <h2>Запуск тестов внутри контейнера</h2>

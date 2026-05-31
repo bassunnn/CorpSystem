@@ -11,6 +11,7 @@ class TaskManager {
 public:
     int addTask(const std::string& title, const std::string& description);
     bool archiveTask(int taskId);
+    bool deleteTask(int taskId);
     const std::vector<Task>& tasks() const;
     std::optional<Task> findTask(int taskId) const;
     void replaceTasks(std::vector<Task> loadedTasks);

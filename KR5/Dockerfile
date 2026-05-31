@@ -33,4 +33,3 @@ RUN mkdir -p /app/data \
 
 USER appuser
 ENTRYPOINT ["time_tracker"]
-CMD ["--demo"]

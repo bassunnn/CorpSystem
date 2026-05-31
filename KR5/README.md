@@ -38,10 +38,16 @@ docker build -t time-tracker-kr5 .
 
 ## Запуск контейнера
 
+Интерактивный запуск приложения:
+
+```sh
+docker run --rm -it time-tracker-kr5
+```
+
 Демонстрационный запуск:
 
 ```sh
-docker run --rm time-tracker-kr5
+docker run --rm time-tracker-kr5 --demo
 ```
 
 Передача аргументов командной строки:
@@ -50,6 +56,7 @@ docker run --rm time-tracker-kr5
 docker run --rm time-tracker-kr5 --help
 docker run --rm time-tracker-kr5 add-task "Write report" "Prepare Docker section"
 docker run --rm time-tracker-kr5 list-tasks
+docker run --rm time-tracker-kr5 delete-task 1
 docker run --rm time-tracker-kr5 report
 ```
 
@@ -69,10 +76,11 @@ time_tracker --demo                  run container demo
 time_tracker [--data DIR] add-task TITLE [DESCRIPTION]
 time_tracker [--data DIR] list-tasks
 time_tracker [--data DIR] archive-task ID
+time_tracker [--data DIR] delete-task ID
 time_tracker [--data DIR] start ID
 time_tracker [--data DIR] stop
 time_tracker [--data DIR] history
 time_tracker [--data DIR] report
 ```
 
-Без аргументов приложение запускает старое интерактивное меню. В контейнере по умолчанию выполняется команда `--demo`, чтобы контейнер сразу показывал работу проекта.
+Без аргументов приложение запускает интерактивное меню. Для быстрой демонстрации контейнера можно передать команду `--demo`.

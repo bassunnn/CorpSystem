@@ -16,6 +16,7 @@ private:
     void addTask();
     void listTasks() const;
     void archiveTask();
+    void deleteTask();
     void startTimer();
     void stopTimer();
     void showHistory() const;

@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/KR3/include",
+                "${workspaceFolder}/KR4/include",
+                "${workspaceFolder}/KR4/build/_deps/catch2-src/src",
+                "${workspaceFolder}/KR4/build/_deps/catch2-build/generated-includes",
+                "${workspaceFolder}/KR5/include",
+                "${workspaceFolder}/KR5/build/_deps/catch2-src/src",
+                "${workspaceFolder}/KR5/build/_deps/catch2-build/generated-includes"
+            ],
+            "defines": [],
+            "compilerPath": "",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}

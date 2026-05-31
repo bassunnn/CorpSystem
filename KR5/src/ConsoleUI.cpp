@@ -32,6 +32,7 @@ void ConsoleUI::run()
         std::cout << "5. Stop timer\n";
         std::cout << "6. Show history\n";
         std::cout << "7. Show report\n";
+        std::cout << "8. Delete task\n";
         std::cout << "0. Save and exit\n";
         std::cout << "Choice: ";
 
@@ -56,6 +57,9 @@ void ConsoleUI::run()
             break;
         case 7:
             reportService_.printReport(taskManager_.tasks(), timeTracker_.sessions());
+            break;
+        case 8:
+            deleteTask();
             break;
         case 0:
             save();
@@ -97,6 +101,18 @@ void ConsoleUI::archiveTask()
     std::cout << "Task id: ";
     if (taskManager_.archiveTask(readInt())) {
         std::cout << "Task archived.\n";
+    } else {
+        std::cout << "Task not found.\n";
+    }
+}
+
+void ConsoleUI::deleteTask()
+{
+    std::cout << "Task id: ";
+    const int taskId = readInt();
+    if (taskManager_.deleteTask(taskId)) {
+        const int removedSessions = timeTracker_.deleteSessionsForTask(taskId);
+        std::cout << "Task deleted. Removed sessions: " << removedSessions << ".\n";
     } else {
         std::cout << "Task not found.\n";
     }

@@ -14,6 +14,7 @@ void printHelp()
               << "  time_tracker [--data DIR] add-task TITLE [DESCRIPTION]\n"
               << "  time_tracker [--data DIR] list-tasks\n"
               << "  time_tracker [--data DIR] archive-task ID\n"
+              << "  time_tracker [--data DIR] delete-task ID\n"
               << "  time_tracker [--data DIR] start ID\n"
               << "  time_tracker [--data DIR] stop\n"
               << "  time_tracker [--data DIR] history\n"
@@ -105,6 +106,22 @@ int runCommand(
         }
         save(storage, taskManager, timeTracker);
         std::cout << "Task archived.\n";
+        return 0;
+    }
+
+    if (command == "delete-task") {
+        if (args.size() < 2) {
+            std::cerr << "delete-task requires ID argument.\n";
+            return 1;
+        }
+        const int taskId = std::stoi(args[1]);
+        if (!taskManager.deleteTask(taskId)) {
+            std::cerr << "Task not found.\n";
+            return 1;
+        }
+        const int removedSessions = timeTracker.deleteSessionsForTask(taskId);
+        save(storage, taskManager, timeTracker);
+        std::cout << "Task deleted. Removed sessions: " << removedSessions << ".\n";
         return 0;
     }
 
