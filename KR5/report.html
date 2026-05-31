@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Практическое занятие №5 - Контейнеризация</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f3f5f7;
+      color: #1f2933;
+      font-family: Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 32px auto;
+      padding: 44px 56px;
+      background: #ffffff;
+      border: 1px solid #d9e2ec;
+    }
+
+    h1, h2, h3 {
+      color: #102a43;
+      line-height: 1.2;
+    }
+
+    h1 {
+      margin-top: 0;
+      text-align: center;
+      font-size: 30px;
+    }
+
+    h2 {
+      margin-top: 36px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #d9e2ec;
+      font-size: 22px;
+    }
+
+    code, pre {
+      font-family: Consolas, monospace;
+    }
+
+    pre {
+      overflow-x: auto;
+      padding: 14px 16px;
+      background: #f0f4f8;
+      border: 1px solid #bcccdc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid #bcccdc;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #e6eef6;
+    }
+
+    .title-page {
+      min-height: 560px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .title-page p {
+      margin: 6px 0;
+      text-align: center;
+    }
+
+    .meta {
+      margin-top: 42px;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+
+      main {
+        margin: 0;
+        border: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <section class="title-page">
+    <h1>Практическое занятие №5<br>Контейнеризация</h1>
+    <div class="meta">
+      <p>Дисциплина: Программирование корпоративных систем</p>
+      <p>Проект: Тайм-трекер</p>
+      <p>Технологии: C++17, CMake, Catch2, Docker</p>
+      <p>Семестр: 2 семестр, 2025-2026 гг.</p>
+    </div>
+  </section>
+
+  <h2>Цель работы</h2>
+  <p>
+    Цель практического занятия - изучить основы контейнеризации и подготовить
+    Docker-образ, в котором учебный C++ проект собирается, тестируется и запускается
+    в чистом Linux-окружении.
+  </p>
+
+  <h2>Краткое описание проекта</h2>
+  <p>
+    В качестве учебного проекта используется консольный тайм-трекер. Приложение
+    позволяет создавать задачи, запускать и останавливать таймер, просматривать
+    историю рабочих сессий и формировать отчет по затраченному времени.
+  </p>
+
+  <h2>Выполненные изменения</h2>
+  <ul>
+    <li>Создан каталог <code>KR5</code> на основе версии проекта с unit-тестами.</li>
+    <li>Добавлен многостадийный <code>Dockerfile</code>.</li>
+    <li>Добавлен файл <code>.dockerignore</code> для исключения временных файлов.</li>
+    <li>В <code>src/main.cpp</code> добавлен режим запуска через аргументы командной строки.</li>
+    <li>Сборка Docker-образа выполняет unit-тесты Catch2 через <code>ctest</code>.</li>
+    <li>Финальный контейнер запускает приложение командой <code>time_tracker</code>.</li>
+  </ul>
+
+  <h2>Структура Dockerfile</h2>
+  <table>
+    <tr>
+      <th>Этап</th>
+      <th>Назначение</th>
+    </tr>
+    <tr>
+      <td><code>build</code></td>
+      <td>
+        Устанавливает зависимости сборки, копирует исходный код, запускает CMake,
+        компилирует проект и выполняет тесты.
+      </td>
+    </tr>
+    <tr>
+      <td><code>runtime</code></td>
+      <td>
+        Создает чистое окружение для запуска, копирует только готовый исполняемый
+        файл и запускает приложение от отдельного пользователя.
+      </td>
+    </tr>
+  </table>
+
+  <h2>Команды сборки и запуска</h2>
+  <p>Сборка образа выполняется из каталога <code>KR5</code>:</p>
+  <pre><code>docker build -t time-tracker-kr5 .</code></pre>
+
+  <p>Демонстрационный запуск контейнера:</p>
+  <pre><code>docker run --rm time-tracker-kr5</code></pre>
+
+  <p>Передача аргументов командной строки:</p>
+  <pre><code>docker run --rm time-tracker-kr5 --help
+docker run --rm time-tracker-kr5 add-task "Write report" "Prepare Docker section"
+docker run --rm time-tracker-kr5 list-tasks
+docker run --rm time-tracker-kr5 report</code></pre>
+
+  <h2>Запуск тестов внутри контейнера</h2>
+  <p>
+    Тесты запускаются на этапе сборки образа командой:
+  </p>
+  <pre><code>ctest --test-dir build --output-on-failure</code></pre>
+  <p>
+    Если хотя бы один тест завершится ошибкой, команда <code>docker build</code>
+    также завершится ошибкой, и runtime-образ не будет создан.
+  </p>
+
+  <h2>Хранение данных</h2>
+  <p>
+    По умолчанию приложение хранит CSV-файлы в каталоге <code>/app/data</code>.
+    Для сохранения данных между запусками контейнера можно подключить Docker volume:
+  </p>
+  <pre><code>docker volume create time-tracker-data
+docker run --rm -v time-tracker-data:/app/data time-tracker-kr5 add-task "Docker demo"
+docker run --rm -v time-tracker-data:/app/data time-tracker-kr5 list-tasks</code></pre>
+
+  <h2>Вывод</h2>
+  <p>
+    В результате работы проект был подготовлен к запуску в Docker. Контейнер
+    обеспечивает чистое Linux-окружение, устанавливает все зависимости явно,
+    собирает приложение без ручной настройки, запускает тесты Catch2 и предоставляет
+    готовый исполняемый образ для демонстрации основной функции тайм-трекера.
+  </p>
+</main>
+</body>
+</html>
